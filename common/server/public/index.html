@@ -1,0 +1,229 @@
+<!doctype html>
+
+<html lang='zh-CN'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <title>ScrcpyNas</title>
+    <script src='js/theme.js'></script>
+    <link rel='shortcut icon' href='favicon.ico' />
+    <link rel='stylesheet' href='css/style.css' />
+    <link rel='stylesheet' href='css/scrollbar.css' />
+    <link rel='stylesheet' href='css/page-index.css' />
+    <link rel='stylesheet' href='css/page-modal.css' />
+    <link rel='stylesheet' href='lib/font-awesome/css/font-awesome.min.css' />
+  </head>
+  <body>
+    <div class='app-shell'>
+      <aside class='sidebar'>
+        <div class='brand'>
+          <span class='logo'>S</span>
+          <div class='brand-copy'>
+            <div class='brand-row'>
+              <h1>ScrcpyNas</h1>
+            </div>
+            <p id='engineStatusText'>投屏服务检测中</p>
+          </div>
+          <div class='sidebar-close-row'>
+            <button
+              id='sidebarCloseBtn'
+              class='icon-btn compact sidebar-close-btn'
+              type='button'
+              title='关闭菜单'
+              aria-label='关闭菜单'
+            >
+              <i class='fa fa-times' aria-hidden='true'></i>
+            </button>
+          </div>
+        </div>
+
+        <div class='side-actions'>
+          <button id='connectOpenBtn' class='btn primary' type='button'>连接设备</button>
+          <button id='logsOpenBtn' class='btn' type='button'>查看日志</button>
+          <button id='aboutOpenBtn' class='btn' type='button'>关于</button>
+        </div>
+
+        <div class='side-head'>
+          <h2>连接记录</h2>
+          <button
+            id='refreshBtn'
+            class='icon-btn compact'
+            type='button'
+            title='刷新记录'
+            aria-label='刷新记录'
+          >
+            <i class='fa fa-refresh' aria-hidden='true'></i>
+          </button>
+        </div>
+        <div id='devices' class='devices'>
+          <p class='empty'>暂无设备</p>
+        </div>
+      </aside>
+
+      <main class='stage'>
+        <header class='stage-head'>
+          <div>
+            <div class='selected-device-line'>
+              <p class='selected-device-heading'>当前设备：</p>
+              <h3 id='selectedTitle' class='selected-device-title'>未选择设备</h3>
+            </div>
+            <p id='selectedMeta' class='selected-device-meta'>从左侧连接记录单击设备后自动连接并打开画面。</p>
+          </div>
+          <div class='toolbar'>
+            <button
+              id='themeToggleBtn'
+              class='icon-btn'
+              type='button'
+              title='主题色'
+              aria-label='切换主题色'
+            >
+              <i class='fa fa-moon-o' aria-hidden='true'></i>
+            </button>
+            <button
+              id='menuBtn'
+              class='icon-btn menu-btn'
+              type='button'
+              title='打开菜单'
+              aria-label='打开菜单'
+            >
+              <i class='fa fa-bars' aria-hidden='true'></i>
+            </button>
+            <button
+              id='openNewBtn'
+              class='icon-btn'
+              type='button'
+              title='新标签打开'
+              aria-label='新标签打开'
+              disabled
+            >
+              <i class='fa fa-external-link' aria-hidden='true'></i>
+            </button>
+            <button
+              id='disconnectBtn'
+              class='icon-btn danger'
+              type='button'
+              title='断开'
+              aria-label='断开'
+              disabled
+            >
+              <i class='fa fa-power-off' aria-hidden='true'></i>
+            </button>
+          </div>
+        </header>
+
+        <section class='viewer'>
+          <div id='mirrorEmpty' class='viewer-empty'>选择左侧在线设备开始投屏和操作。</div>
+          <iframe id='mirrorFrame' title='投屏' allow='autoplay; fullscreen'></iframe>
+        </section>
+      </main>
+      <div class='sidebar-backdrop' id='sidebarBackdrop'></div>
+    </div>
+
+    <div id='connectModal' class='modal hidden' role='dialog' aria-modal='true' aria-labelledby='connectTitle'>
+      <div class='modal-card'>
+        <div class='modal-head'>
+          <h2 id='connectTitle'>连接设备</h2>
+          <div class='modal-actions'>
+            <button class='icon-btn' data-close-modal='connectModal' type='button' title='关闭' aria-label='关闭'>
+              <i class='fa fa-times' aria-hidden='true'></i>
+            </button>
+          </div>
+        </div>
+        <form id='connectForm' class='form modal-content'>
+          <div class='grid-2'>
+            <label>设备 IP
+              <input id='ip' type='text' placeholder='192.168.68.1' required />
+            </label>
+            <label>连接端口
+              <input id='port' type='text' placeholder='无线调试端口' />
+            </label>
+          </div>
+          <label>显示名称
+            <input id='recordName' type='text' placeholder='可选，默认使用设备型号或 IP' />
+          </label>
+          <label>显示清晰度
+            <div class='seg' id='maxSizeSeg' role='group' aria-label='显示清晰度'>
+              <button type='button' class='seg-btn active' data-maxsize=''>原画</button>
+              <button type='button' class='seg-btn' data-maxsize='1080'>1080p</button>
+              <button type='button' class='seg-btn' data-maxsize='720'>720p</button>
+              <button type='button' class='seg-btn' data-maxsize='480'>480p</button>
+            </div>
+          </label>
+          <div class='grid-2'>
+            <label>配对端口
+              <input id='pairPort' type='text' placeholder='可选' />
+            </label>
+            <label>配对码
+              <input id='pairCode' type='text' inputmode='numeric' placeholder='可选' />
+            </label>
+          </div>
+          <div class='form-actions'>
+            <button type='submit' class='btn primary'>连接</button>
+            <button type='button' id='usbConnectBtn' class='btn'>
+              <i class='fa fa-usb' aria-hidden='true'></i>
+              连接USB设备
+            </button>
+            <span id='connectMsg' class='msg'></span>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div id='logsModal' class='modal hidden' role='dialog' aria-modal='true' aria-labelledby='logsTitle'>
+      <div class='modal-card large'>
+        <div class='modal-head'>
+          <div>
+            <h2 id='logsTitle'>运行日志</h2>
+          </div>
+          <div class='modal-actions'>
+            <button id='refreshLogsBtn' class='icon-btn' type='button' title='刷新日志' aria-label='刷新日志'>
+              <i class='fa fa-refresh' aria-hidden='true'></i>
+            </button>
+            <button class='icon-btn' data-close-modal='logsModal' type='button' title='关闭' aria-label='关闭'>
+              <i class='fa fa-times' aria-hidden='true'></i>
+            </button>
+          </div>
+        </div>
+        <div class='logs-box'>
+          <pre id='logs' class='logs modal-content'></pre>
+          <p id='logsEmpty' class='logs-empty'>暂无日志。</p>
+        </div>
+      </div>
+    </div>
+
+    <div id='aboutModal' class='modal hidden' role='dialog' aria-modal='true' aria-labelledby='aboutTitle'>
+      <div class='modal-card'>
+        <div class='modal-head'>
+          <h2 id='aboutTitle'>关于 ScrcpyNas</h2>
+          <div class='modal-actions'>
+            <button class='icon-btn' data-close-modal='aboutModal' type='button' title='关闭' aria-label='关闭'>
+              <i class='fa fa-times' aria-hidden='true'></i>
+            </button>
+          </div>
+        </div>
+        <div class='about-content modal-content'>
+          <dl>
+            <div>
+              <dt>套件用途</dt>
+              <dd>在局域网中连接 Android 设备，并通过浏览器进行实时投屏和触摸控制。</dd>
+            </div>
+            <div>
+              <dt>使用方式</dt>
+              <dd>先在手机开启无线调试，再点“连接设备”填写 IP 与端口；连接成功后左侧会保存记录，单击记录即可打开投屏。</dd>
+            </div>
+            <div>
+              <dt>开源地址</dt>
+              <dd><a href='https://github.com/zgcwkjOpenProject/ScrcpyNas' target='_blank' rel='noopener'>github.com/zgcwkjOpenProject/ScrcpyNas</a></dd>
+            </div>
+            <div>
+              <dt>作者</dt>
+              <dd><a href='https://github.com/zgcwkj' target='_blank' rel='noopener'>github.com/zgcwkj</a></dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+    </div>
+
+    <script src='app.js'></script>
+  </body>
+</html>

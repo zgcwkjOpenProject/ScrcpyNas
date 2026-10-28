@@ -1,0 +1,19 @@
+[
+  {
+    "stepTitle": "使用说明",
+    "items": [
+      {
+        "type": "tips",
+        "helpText": "ScrcpyNas 基于 ws-scrcpy 引擎：浏览器接收 Android 端 scrcpy-server 的视频流，并支持触控、按键等基础控制。"
+      },
+      {
+        "type": "tips",
+        "helpText": "手机端准备：开启 Android 开发者选项与无线调试；Android 11+ 首次使用需在页面中输入配对端口和配对码。"
+      },
+      {
+        "type": "tips",
+        "helpText": "访问方式：安装完成后从应用中心打开（需先登录 fnOS）。统一网关会自动校验登录态，并透传当前用户身份。"
+      }
+    ]
+  }
+]

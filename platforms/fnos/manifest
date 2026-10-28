@@ -1,0 +1,17 @@
+appname               = scrcpyNasFree
+version               = 1.0.1
+display_name          = ScrcpyNas投屏
+desc                  = 通过 scrcpy-server 视频流在浏览器中实时投屏与控制 Android 设备
+source                = thirdparty
+platform              = all
+maintainer            = zgcwkj
+maintainer_url        = https://github.com/zgcwkj
+distributor           = zgcwkj
+desktop_uidir         = ui
+desktop_applaunchname = scrcpyNasFree.Application
+ctl_stop              = true
+os_min_version        = 1.1.3100
+checkport             = false
+install_dep_apps      = nodejs_v24
+changelog             = 功能完善和代码优化
+checksum              = 250569b6551eb38b0982df81ee33fd95

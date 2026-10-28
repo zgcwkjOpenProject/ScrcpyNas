@@ -1,0 +1,263 @@
+/* 全站通用基础样式：配色变量、元素重置、按钮系统、通用对话框 */
+
+/* ---- 设计 token（亮色）---- */
+
+:root {
+  color-scheme: light;
+  --bg: #eef2f6;
+  --sidebar: #f9fbfd;
+  --surface: #ffffff;
+  --surface-soft: #f5f8fb;
+  --text: #172033;
+  --muted: #65758b;
+  --border: #d7e0ea;
+  --line: #e8eef5;
+  --primary: #4f46e5;
+  --primary-strong: #4338ca;
+  --blue: #2563eb;
+  --danger: #dc2626;
+  --warn: #b45309;
+  --shadow: 0 18px 45px rgba(15, 23, 42, 0.12);
+}
+
+/* 深色 token 由 js/theme.js 按主题色开关写入 data-theme，自动模式解析为具体配色 */
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --bg: #0f141b;
+  --sidebar: #121923;
+  --surface: #171f2a;
+  --surface-soft: #1f2937;
+  --text: #e5edf6;
+  --muted: #9aa8ba;
+  --border: #2c3848;
+  --line: #243142;
+  --primary: #818cf8;
+  --primary-strong: #a5b4fc;
+  --blue: #60a5fa;
+  --danger: #f87171;
+  --warn: #fbbf24;
+  --shadow: 0 18px 45px rgba(0, 0, 0, 0.28);
+}
+
+/* ---- reset ---- */
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: system-ui, -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+button:disabled {
+  cursor: not-allowed;
+}
+
+h1,
+h2,
+p {
+  margin: 0;
+}
+
+/* ---- 通用按钮系统 ---- */
+
+.btn {
+  min-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 12px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+a.btn,
+a.btn:visited {
+  color: var(--text);
+}
+
+.btn:hover:not(:disabled) {
+  border-color: #b9c6d8;
+  background: var(--surface-soft);
+}
+
+.btn:disabled,
+.icon-btn:disabled {
+  opacity: 0.46;
+}
+
+.btn.primary {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #ffffff;
+  font-weight: 650;
+}
+
+.btn.primary:hover:not(:disabled) {
+  border-color: var(--primary-strong);
+  background: var(--primary-strong);
+}
+
+/* ---- 图标按钮 ---- */
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1;
+}
+
+.icon-btn:hover:not(:disabled) {
+  color: var(--text);
+  background: var(--surface-soft);
+}
+
+.icon-btn.primary {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.icon-btn.primary:hover:not(:disabled) {
+  border-color: var(--primary-strong);
+  background: var(--primary-strong);
+  color: #ffffff;
+}
+
+/* 图标按钮的选中态 由 aria-pressed 驱动 表示对应视图已激活 */
+.icon-btn[aria-pressed='true'] {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: #ffffff;
+}
+
+.btn.danger,
+.icon-btn.danger {
+  border-color: rgba(220, 38, 38, 0.24);
+  color: var(--danger);
+}
+
+.icon-btn.compact {
+  width: 30px;
+  height: 30px;
+  font-size: 14px;
+}
+
+.btn .fa {
+  font-size: 15px;
+}
+
+/* ---- 杂项工具类 ---- */
+
+.muted {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ---- 通用确认与提示弹窗 ---- */
+
+.app-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(15, 23, 42, 0.5);
+}
+
+.app-dialog {
+  width: min(420px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.app-dialog h2 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.app-dialog-message {
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.app-dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ---- 弹窗渐现动画 ---- */
+
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes modal-rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .app-dialog-backdrop,
+  .app-dialog {
+    animation: none;
+  }
+}
+
+:root[data-theme='dark'] .app-dialog-backdrop {
+  background: rgba(0, 0, 0, 0.64);
+}

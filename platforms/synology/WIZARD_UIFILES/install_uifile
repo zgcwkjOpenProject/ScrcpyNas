@@ -1,0 +1,10 @@
+[
+  {
+    "step_title": "Instructions",
+    "items": [
+      { "desc": "ScrcpyNas receives the Android scrcpy-server video stream in your browser and supports basic touch and key controls." },
+      { "desc": "On the phone, enable Developer options and Wireless debugging. On Android 11 or later, enter the pairing port and code on first use." },
+      { "desc": "After installation, open it from the DSM main menu or visit /webman/zgcwkj/scrcpynas/ in a browser." }
+    ]
+  }
+]

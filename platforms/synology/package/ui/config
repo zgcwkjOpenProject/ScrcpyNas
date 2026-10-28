@@ -1,0 +1,22 @@
+{
+  "Main.js": {
+    "SYNO.SDS.ScrcpyNasFree.Instance": {
+      "type": "app",
+      "version": "0.0.0",
+      "desc": "ScrcpyNas Web UI",
+      "icon": "images/icon_{0}.png",
+      "title": "ScrcpyNas",
+      "allowMultiInstance": false,
+      "appWindow": "SYNO.SDS.ScrcpyNas.Main",
+      "allUsers": true,
+      "grantPrivilege": "local",
+      "depend": []
+    },
+    "SYNO.SDS.ScrcpyNas.Main": {
+      "type": "lib",
+      "title": "ScrcpyNas",
+      "icon": "images/icon_{0}.png",
+      "depend": []
+    }
+  }
+}

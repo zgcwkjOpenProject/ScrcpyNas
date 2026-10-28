@@ -1,0 +1,11 @@
+[Unit]
+Description=ScrcpyNas
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/var/packages/scrcpynasfree/target/app/start.sh
+# control-group 确保 stop/restart 时清掉主进程派生的 adb 和引擎子进程
+KillMode=control-group
+Restart=always
+RestartSec=3

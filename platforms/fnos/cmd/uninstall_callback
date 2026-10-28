@@ -1,0 +1,19 @@
+#!/bin/bash
+
+### This script is called after the user uninstalls the application
+
+# 仅在用户选择删除数据时清理飞牛提供的包级目录
+if [ "${wizard_delete_data:-false}" = "true" ]; then
+    for path in \
+        "${TRIM_PKGMETA:-}" \
+        "${TRIM_PKGETC:-}" \
+        "${TRIM_PKGVAR:-}" \
+        "${TRIM_PKGHOME:-}"
+    do
+        if [ -n "$path" ] && [ -e "$path" ]; then
+            rm -rf "$path"
+        fi
+    done
+fi
+
+exit 0

@@ -1,0 +1,4 @@
+#!/bin/sh
+
+# DSM 会依据 conf/privilege 创建套件用户
+exit 0

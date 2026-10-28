@@ -1,0 +1,10 @@
+#!/bin/sh
+
+# 卸载前停止服务 防止与最终的数据保存产生竞争
+synosystemctl stop pkguser-scrcpynas 2>/dev/null || true
+
+# 停止后在 DSM 删除 target 前保存最新用户数据
+. "$(dirname "$0")/functions"
+sync_data_from_app || true
+
+exit 0

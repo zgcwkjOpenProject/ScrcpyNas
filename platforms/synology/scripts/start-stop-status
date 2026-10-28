@@ -1,0 +1,19 @@
+#!/bin/sh
+case "$1" in
+    start)
+        exec synosystemctl start pkguser-scrcpynas
+        ;;
+    stop)
+        exec synosystemctl stop pkguser-scrcpynas
+        ;;
+    status)
+        exec synosystemctl get-active-status pkguser-scrcpynas
+        ;;
+    log)
+        echo "/var/packages/scrcpynasfree/var/app/scrcpynas.log"
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|status}" >&2
+        exit 1
+        ;;
+esac

@@ -1,0 +1,13 @@
+{
+  ".url": {
+    "scrcpyNasFree.Application": {
+      "title": "ScrcpyNas",
+      "icon": "images/icon_{0}.webp",
+      "type": "iframe",
+      "gatewayPrefix": "/app/scrcpyNasFree",
+      "gatewaySocket": "app.sock",
+      "url": "/app/scrcpyNasFree",
+      "allUsers": true
+    }
+  }
+}

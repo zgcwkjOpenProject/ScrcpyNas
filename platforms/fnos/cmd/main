@@ -1,0 +1,184 @@
+#!/bin/bash
+
+PID_FILE="${TRIM_PKGVAR}/app.pid"
+
+APP_DIR="${TRIM_APPDEST}"
+APP_LOG_DIR="${APP_DIR}/logs"
+VAR_LOG_FILE="${TRIM_PKGVAR}/info.log"
+APP_LOG_FILE="${APP_LOG_DIR}/info.log"
+LOG_FILE="$VAR_LOG_FILE"
+NODE_HOME="/var/apps/nodejs_v24/target"
+NODE_BIN="${NODE_HOME}/bin/node"
+
+if [ ! -x "$NODE_BIN" ]; then
+    NODE_BIN="$(command -v node 2>/dev/null)"
+fi
+
+ADB_HOME="${TRIM_PKGVAR}"
+if [ -n "$TRIM_DATA_SHARE_PATHS" ]; then
+    first_share="$(echo "$TRIM_DATA_SHARE_PATHS" | cut -d: -f1 | cut -d, -f1)"
+    if [ -d "$first_share" ]; then
+        ADB_HOME="$first_share"
+    fi
+fi
+
+# 按机器架构选择 platform-tools 子目录 stop 时也要用 全局定义
+ARCH_DIR=""
+case "$(uname -m)" in
+    x86_64)
+        ARCH_DIR="x86_64"
+        ;;
+    aarch64)
+        ARCH_DIR="arm64"
+        ;;
+esac
+ADB_BIN="${APP_DIR}/platform-tools/${ARCH_DIR}/adb"
+PT_DIR="${APP_DIR}/platform-tools/${ARCH_DIR}"
+
+init_log_file() {
+    mkdir -p "$TRIM_PKGVAR" 2>/dev/null || true
+    mkdir -p "$APP_LOG_DIR" 2>/dev/null || true
+
+    if touch "$APP_LOG_FILE" 2>/dev/null; then
+        LOG_FILE="$APP_LOG_FILE"
+    else
+        touch "$VAR_LOG_FILE" 2>/dev/null || true
+        LOG_FILE="$VAR_LOG_FILE"
+    fi
+}
+
+log_msg() {
+    init_log_file
+    echo "$(date '+%Y-%m-%d %H:%M:%S') - $1" >> "$LOG_FILE"
+}
+
+write_user_error() {
+    echo "$1" > "$TRIM_TEMP_LOGFILE"
+    log_msg "ERROR: $1"
+}
+
+check_process() {
+    local pid="$1"
+    [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null
+}
+
+status_app() {
+    if [ -f "$PID_FILE" ]; then
+        local pid
+        pid="$(head -n 1 "$PID_FILE" | tr -d '[:space:]')"
+        if check_process "$pid"; then
+            return 0
+        fi
+        rm -f "$PID_FILE"
+    fi
+
+    return 1
+}
+
+start_app() {
+    if status_app; then
+        return 0
+    fi
+
+    # 架构映射失败说明平台不在支持列表内
+    if [ -z "$ARCH_DIR" ]; then
+        write_user_error "暂不支持的架构：$(uname -m)（当前支持 x86_64 / arm64）"
+        return 1
+    fi
+
+    init_log_file
+    log_msg "Log file: $LOG_FILE"
+    log_msg "App dir log candidate: $APP_LOG_FILE"
+    log_msg "Runtime dir log fallback: $VAR_LOG_FILE"
+
+    if [ -z "$NODE_BIN" ] || [ ! -x "$NODE_BIN" ]; then
+        write_user_error "未找到 Node 运行时，请确认依赖套件 nodejs_v24 已安装并启用。"
+        return 1
+    fi
+
+    if [ ! -f "$ADB_BIN" ]; then
+        write_user_error "未找到 adb: $ADB_BIN"
+        return 1
+    fi
+
+    chmod +x "$ADB_BIN" 2>/dev/null || true
+
+    log_msg "Starting scrcpyNas Web service with Node: $NODE_BIN"
+    env \
+        HOME="$ADB_HOME" \
+        TMPDIR="$ADB_HOME" \
+        SOCKET_PATH="${TRIM_APPDEST}/app.sock" \
+        BASE_PATH="/app/scrcpyNasFree" \
+        PLATFORM=fnos \
+        WS_SCRCPY_PORT=8128 \
+        WS_SCRCPY_BIND_HOST=127.0.0.1 \
+        ADB_BIN="$ADB_BIN" \
+        LOG_FILE="$LOG_FILE" \
+        APP_LOG_FILE="$APP_LOG_FILE" \
+        VAR_LOG_FILE="$VAR_LOG_FILE" \
+        WS_SCRCPY_DIR="${APP_DIR}/engine" \
+        NODE_BIN="$NODE_BIN" \
+        NODE_PATH="${APP_DIR}/engine/node_modules" \
+        PATH="${PT_DIR}:${NODE_HOME}/bin:/usr/bin:/bin" \
+        "$NODE_BIN" "${APP_DIR}/server/server.js" >> "$LOG_FILE" 2>&1 &
+
+    echo "$!" > "$PID_FILE"
+    sleep 1
+
+    if status_app; then
+        return 0
+    fi
+
+    write_user_error "scrcpyNas Web 服务启动后立即退出，请查看 $LOG_FILE。"
+    return 1
+}
+
+stop_app() {
+    init_log_file
+    log_msg "Stopping scrcpyNas Web service..."
+
+    if [ -f "$PID_FILE" ]; then
+        local pid
+        pid="$(head -n 1 "$PID_FILE" | tr -d '[:space:]')"
+
+        if check_process "$pid"; then
+            kill -TERM "$pid" 2>> "$LOG_FILE" || true
+
+            local count
+            count=0
+            while check_process "$pid" && [ "$count" -lt 10 ]; do
+                sleep 1
+                count=$((count + 1))
+            done
+
+            if check_process "$pid"; then
+                kill -KILL "$pid" 2>> "$LOG_FILE" || true
+            fi
+        fi
+        rm -f "$PID_FILE"
+    fi
+
+    # 清理 adb server 与引擎残留进程 变量已全局定义 stop 单独调用时也有效
+    "$ADB_BIN" kill-server >> "$LOG_FILE" 2>&1 || true
+    pkill -f "${APP_DIR}/engine/index.js" 2>/dev/null || true
+    pkill -f "${APP_DIR}/engine/dist/index.js" 2>/dev/null || true
+}
+
+case "$1" in
+start)
+    start_app
+    ;;
+stop)
+    stop_app
+    ;;
+status)
+    if status_app; then
+        exit 0
+    fi
+    exit 3
+    ;;
+*)
+    echo "Unknown command: $1" > "$TRIM_TEMP_LOGFILE"
+    exit 1
+    ;;
+esac

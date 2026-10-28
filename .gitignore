@@ -1,0 +1,25 @@
+# 构建产物
+/dist/
+*.fpk
+*.spk
+
+# 打包暂存/中间目录（platforms/build-*.ps1 自动生成）
+/build/
+
+# 构建工具二进制（fnpack 从飞牛官网下载，不入库）
+fnpack.exe
+
+# 日志与临时文件
+*.log
+*.tmp
+
+# IDE / 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+desktop.ini

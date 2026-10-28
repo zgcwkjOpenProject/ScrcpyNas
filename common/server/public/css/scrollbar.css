@@ -1,0 +1,44 @@
+/* 全站统一滚动条样式：细窄半透明轨道，悬停时加亮 */
+
+/* ---- webkit 内核滚动条 ---- */
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track,
+*::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgba(140, 152, 170, 0.4);
+  border-radius: 999px;
+  transition: background 0.15s ease;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgba(140, 152, 170, 0.7);
+}
+
+/* ---- Firefox ---- */
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(140, 152, 170, 0.4) transparent;
+}
+
+/* ---- 深色模式滚动条 ---- */
+
+:root[data-theme='dark'] *::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.45);
+}
+
+:root[data-theme='dark'] *::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.75);
+}
+
+:root[data-theme='dark'] * {
+  scrollbar-color: rgba(148, 163, 184, 0.45) transparent;
+}

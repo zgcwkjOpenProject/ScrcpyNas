@@ -1,0 +1,672 @@
+/* 主页弹窗样式：弹窗容器、表单控件、行内提示、日志区、关于页内容 */
+
+/* ---- 弹窗容器 ---- */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(15, 23, 42, 0.46);
+  animation: modal-fade-in 0.18s ease-out;
+}
+
+/* 投屏设置弹窗内的文字不可拖选 */
+#mirrorSettingsModal .modal-card {
+  min-height: min(508px, calc(100vh - 36px));
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ---- 连接加载遮罩 ---- */
+
+.connection-loading {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 18px;
+  background: rgba(15, 23, 42, 0.58);
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+}
+
+.connection-loading-content {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 13px;
+}
+
+.connection-loading-content .fa {
+  color: var(--primary);
+  font-size: 17px;
+}
+
+.modal-card {
+  width: min(560px, 100%);
+  min-width: 0;
+  max-height: calc(100vh - 36px);
+  animation: modal-rise-in 0.18s ease-out;
+  overflow: hidden;
+  overscroll-behavior: contain;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.modal-card.large {
+  width: min(980px, 100%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .modal,
+  .modal-card {
+    animation: none;
+  }
+}
+
+/* 弹窗只有内容区滚动，标题和操作按钮固定不动 */
+.modal-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+/* 连接弹窗的网络表单和 USB 设备列表高度不同，固定最小高度避免切换视图时弹窗跳动 */
+#connectModal .modal-card {
+  min-height: min(340px, calc(100vh - 36px));
+}
+
+.modal-card.license-card {
+  width: min(440px, 100%);
+}
+
+/* 文件管理弹窗按视口高度撑开，给内嵌页面一个确定高度 */
+.modal-card.file-manager-card {
+  height: min(720px, calc(100vh - 36px));
+}
+
+.file-manager-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  overflow: hidden;
+}
+
+.modal-head {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.modal-head>div:first-child {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+.modal-head h2 {
+  font-size: 17px;
+}
+
+.modal-actions,
+.form-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.modal-actions {
+  align-self: center;
+}
+
+/* ---- 表单 ---- */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.grid-2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.grid-2>label,
+.mirror-settings-grid>label {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.mirror-settings-form {
+  gap: 14px;
+}
+
+/* 保存区固定在弹窗底部：内容不足时靠 auto 外边距贴底，内容溢出时靠 sticky 停住 */
+.mirror-settings-form>.form-actions {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto;
+  padding-top: 12px;
+  background: var(--surface);
+}
+
+.mirror-quality-presets {
+  display: flex;
+  gap: 8px;
+}
+
+.mirror-quality-presets .btn {
+  flex: 1 1 0;
+}
+
+.mirror-quality-presets .btn {
+  min-width: 0;
+  padding-inline: 8px;
+}
+
+.mirror-settings-grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: start;
+  gap: 12px;
+}
+
+.mirror-settings-checks {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.mirror-settings-selects {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+/* 虚拟按钮多选：触发按钮外观与下拉框一致，展开后浮出可勾选的按钮列表 */
+.mirror-key-buttons-trigger {
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  text-align: start;
+}
+
+.mirror-key-buttons-trigger:hover {
+  border-color: #b9c6d8;
+  background: var(--surface-soft);
+}
+
+.mirror-key-buttons-trigger .fa {
+  color: var(--muted);
+  font-size: 12px;
+  transition: transform 0.15s ease;
+}
+
+.mirror-key-buttons-trigger[aria-expanded='true'] .fa {
+  transform: rotate(180deg);
+}
+
+/* 浮层脱离文档流，位置由脚本按触发按钮计算 */
+.mirror-key-buttons-panel {
+  position: fixed;
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  width: max-content;
+  max-width: min(260px, calc(100vw - 16px));
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.mirror-key-buttons-panel .check-row {
+  min-height: 30px;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.mirror-key-buttons-panel .check-row:hover {
+  background: var(--surface-soft);
+}
+
+.mirror-key-buttons-panel .field-hint {
+  padding: 4px 8px 2px;
+  white-space: normal;
+}
+
+.select-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.select-row span {
+  white-space: nowrap;
+}
+
+/* 触发按钮与下拉框共用尺寸，避免同一分组内控件宽窄不一 */
+.select-row select,
+.mirror-key-buttons-trigger {
+  width: auto;
+  min-width: 96px;
+}
+
+/* AI 服务开关独占一行；分组是 flex 容器，里面的 <br /> 只是零宽元素撑不出换行 */
+.mirror-ai-only .ai-enable-row {
+  flex: 0 0 100%;
+}
+
+/* AI 服务的地址和端口沿用下拉框的窄宽；令牌要完整可见所以更宽 */
+.select-row .ai-input {
+  width: auto;
+  min-width: 120px;
+}
+
+.select-row .ai-token {
+  width: auto;
+  min-width: 260px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+/* 自定义命令可能较长，独占一行并把提示语换到输入框下方 */
+.mirror-advanced-only .mirror-extra-row {
+  flex: 0 0 100%;
+  flex-wrap: wrap;
+}
+
+.select-row .mirror-extra-input {
+  flex: 1;
+  width: auto;
+  min-width: 200px;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+.mirror-extra-row .field-hint {
+  flex: 0 0 100%;
+  white-space: normal;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  min-height: 36px;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  outline: none;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.plugin-css-editor {
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 0;
+  resize: none;
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+#pluginForm>label {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+#mirrorSettingsModal .plugin-css-editor {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  border-color: var(--blue);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.12);
+}
+
+/* 连接弹窗的偏好复选横排显示，空间不足时换行 */
+.check-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+}
+
+.check-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  color: var(--text);
+  font-size: 13px;
+}
+
+.mirror-settings-checks .check-row {
+  min-height: 36px;
+  padding-bottom: 1px;
+  white-space: nowrap;
+}
+
+.check-row span {
+  white-space: nowrap;
+}
+
+.check-row input {
+  width: 18px;
+  height: 18px;
+  min-height: 0;
+  padding: 0;
+  accent-color: var(--primary);
+}
+
+.field-hint {
+  color: var(--muted);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+/* ---- USB 设备列表 ---- */
+
+.usb-devices-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.usb-devices-content .fa-spinner {
+  margin-right: 6px;
+}
+
+.usb-devices {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.usb-device {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 62px;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-soft);
+}
+
+.usb-device-info {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.usb-device-name,
+.usb-device-detail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.usb-device-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.usb-device-name {
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.usb-device-detail {
+  color: var(--muted);
+  font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  font-size: 12px;
+}
+
+.usb-device-error .usb-device-detail {
+  color: var(--danger);
+}
+
+/* ---- 应用管理弹窗 ---- */
+
+/* 与文件管理弹窗一致按视口高度撑开，给内嵌页面一个确定高度 */
+.modal-card.app-manager-card {
+  height: min(720px, calc(100vh - 36px));
+}
+
+.app-manager-frame {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  overflow: hidden;
+}
+
+/* ---- 行内提示 ---- */
+
+.msg {
+  min-height: 18px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.msg.ok {
+  color: var(--primary);
+}
+
+.msg.warn {
+  color: var(--warn);
+}
+
+.msg.err {
+  color: var(--danger);
+}
+
+/* ---- 日志区 ---- */
+
+.logs {
+  height: min(62vh, 560px);
+  overflow: auto;
+  margin: 0;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: #111827;
+  color: #d7deee;
+  font: 12px/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+/* 空态提示盖在日志区上，日志正文写在 pre 内且不参与翻译 */
+.logs-box {
+  position: relative;
+}
+
+.logs-empty {
+  position: absolute;
+  inset: 0;
+  margin: 0;
+  padding: 12px;
+  pointer-events: none;
+  color: #d7deee;
+  font: 12px/1.55 ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  opacity: 0.7;
+}
+
+/* ---- 关于弹窗内容 ---- */
+
+.about-content {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.about-content dl {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  margin: 0;
+}
+
+.about-content dt {
+  margin-bottom: 3px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.about-content dd {
+  margin: 0;
+}
+
+.about-content a {
+  color: var(--blue);
+  text-decoration: none;
+  word-break: break-all;
+}
+
+.about-content a:hover {
+  text-decoration: underline;
+}
+
+/* ---- 深色模式专属 ---- */
+
+:root[data-theme='dark'] .modal {
+  background: rgba(0, 0, 0, 0.58);
+}
+
+:root[data-theme='dark'] .connection-loading {
+  background: rgba(0, 0, 0, 0.68);
+}
+
+:root[data-theme='dark'] .logs {
+  border-color: #374151;
+  background: #030712;
+}
+
+:root[data-theme='dark'] input,
+:root[data-theme='dark'] select {
+  background: #111827;
+}
+
+:root[data-theme='dark'] input:focus,
+:root[data-theme='dark'] select:focus {
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.16);
+}
+
+/* ---- 小屏适配 ---- */
+
+@media (max-width: 560px) {
+
+  .grid-2,
+  .mirror-settings-grid {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .mirror-settings-selects {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .select-row select {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .select-row .ai-input,
+  .select-row .ai-token {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .select-row .mirror-extra-input {
+    min-width: 0;
+  }
+
+  .mirror-quality-presets {
+    flex-wrap: wrap;
+  }
+
+  .mirror-quality-presets .btn {
+    flex-basis: calc(50% - 4px);
+  }
+
+  .mirror-settings-checks {
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .mirror-settings-checks .check-row {
+    min-height: 28px;
+  }
+}
