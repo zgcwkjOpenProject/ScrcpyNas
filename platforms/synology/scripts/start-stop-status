@@ -1,13 +1,13 @@
 #!/bin/sh
 case "$1" in
     start)
-        exec synosystemctl start pkguser-scrcpynas
+        exec synosystemctl start pkguser-scrcpynasfree
         ;;
     stop)
-        exec synosystemctl stop pkguser-scrcpynas
+        exec synosystemctl stop pkguser-scrcpynasfree
         ;;
     status)
-        exec synosystemctl get-active-status pkguser-scrcpynas
+        exec synosystemctl get-active-status pkguser-scrcpynasfree
         ;;
     log)
         echo "/var/packages/scrcpynasfree/var/app/scrcpynas.log"

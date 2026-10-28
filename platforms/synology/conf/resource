@@ -5,7 +5,7 @@
       "enable": [
         {
           "type": "dsm",
-          "relpath": "etc/www/scrcpynas.nginx.conf"
+          "relpath": "etc/www/scrcpynasfree.nginx.conf"
         }
       ]
     }

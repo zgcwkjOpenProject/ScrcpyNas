@@ -4,7 +4,7 @@
     "items": [
       { "desc": "ScrcpyNas 可在瀏覽器中接收 Android 端 scrcpy-server 的視訊串流，並支援觸控、按鍵等基本控制。" },
       { "desc": "手機端準備：開啟 Android 開發人員選項與無線偵錯；Android 11+ 首次使用需在頁面中輸入配對連接埠和配對碼。" },
-      { "desc": "存取方式：安裝完成後從 DSM 主選單開啟，或在瀏覽器造訪 /webman/zgcwkj/scrcpynas/。" }
+      { "desc": "存取方式：安裝完成後從 DSM 主選單開啟，或在瀏覽器造訪 /webman/zgcwkj/scrcpynasfree/。" }
     ]
   }
 ]

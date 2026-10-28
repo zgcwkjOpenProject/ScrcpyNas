@@ -1,7 +1,8 @@
 #!/bin/sh
 # systemd 以套件用户运行本脚本
+# 程序主体在包内 app 子目录
 
-APP_DIR="/var/packages/scrcpynasfree/target"
+APP_DIR="/var/packages/scrcpynasfree/target/app"
 PKGVAR="/var/packages/scrcpynasfree/var"
 DATA_DIR="$PKGVAR/app"
 ARCH_DIR="$APP_DIR/platform-tools"
@@ -54,11 +55,12 @@ mkdir -p "$DATA_DIR" 2>/dev/null || {
 
 # Nginx 反代不剥离前缀 服务需以 BASE_PATH 挂载同名路由
 # 只监听回环地址 鉴权由 DSM 网关完成 不向局域网暴露服务端口
+# 端口与 Go 版 scrcpynas 套件错开 两版可同时安装
 export HOST=127.0.0.1
-export PORT=8129
-export WS_SCRCPY_PORT=8128
+export PORT=8131
+export WS_SCRCPY_PORT=8132
 export WS_SCRCPY_BIND_HOST=127.0.0.1
-export BASE_PATH=/webman/zgcwkj/scrcpynas
+export BASE_PATH=/webman/zgcwkj/scrcpynasfree
 export PLATFORM=synology
 export ADB_BIN
 export NODE_BIN

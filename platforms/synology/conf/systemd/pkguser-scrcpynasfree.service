@@ -1,5 +1,5 @@
 [Unit]
-Description=ScrcpyNas
+Description=ScrcpyNas投屏
 After=network-online.target
 
 [Service]

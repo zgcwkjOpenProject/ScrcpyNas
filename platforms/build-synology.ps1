@@ -134,7 +134,7 @@ Get-ChildItem (Join-Path $SpkRoot 'WIZARD_UIFILES') -File | ForEach-Object { $te
 $textFiles.Add((Join-Path $SpkRoot 'INFO'))
 $textFiles.Add((Join-Path $Payload 'app\start.sh'))
 $textFiles.Add((Join-Path $Payload 'ui\config'))
-$textFiles.Add((Join-Path $Payload 'etc\www\scrcpynas.nginx.conf'))
+$textFiles.Add((Join-Path $Payload 'etc\www\scrcpynasfree.nginx.conf'))
 
 Convert-TextFilesToLf $textFiles
 
@@ -187,7 +187,7 @@ try {
     Add-TarFile -Writer $spkWriter -Source (Join-Path $SpkRoot 'conf/privilege') -Name 'conf/privilege'
     Add-TarFile -Writer $spkWriter -Source (Join-Path $SpkRoot 'conf/resource') -Name 'conf/resource'
     Add-TarDirectory -Writer $spkWriter -Name 'conf/systemd'
-    Add-TarFile -Writer $spkWriter -Source (Join-Path $SpkRoot 'conf/systemd/pkguser-scrcpynas.service') -Name 'conf/systemd/pkguser-scrcpynas.service'
+    Add-TarFile -Writer $spkWriter -Source (Join-Path $SpkRoot 'conf/systemd/pkguser-scrcpynasfree.service') -Name 'conf/systemd/pkguser-scrcpynasfree.service'
 
     Add-TarDirectory -Writer $spkWriter -Name 'WIZARD_UIFILES'
     Get-ChildItem (Join-Path $SpkRoot 'WIZARD_UIFILES') -File | Sort-Object Name | ForEach-Object {

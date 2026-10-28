@@ -3,18 +3,18 @@
     "SYNO.SDS.ScrcpyNasFree.Instance": {
       "type": "app",
       "version": "0.0.0",
-      "desc": "ScrcpyNas Web UI",
+      "desc": "ScrcpyNas投屏 Web UI",
       "icon": "images/icon_{0}.png",
-      "title": "ScrcpyNas",
+      "title": "ScrcpyNas投屏",
       "allowMultiInstance": false,
-      "appWindow": "SYNO.SDS.ScrcpyNas.Main",
+      "appWindow": "SYNO.SDS.ScrcpyNasFree.Main",
       "allUsers": true,
       "grantPrivilege": "local",
       "depend": []
     },
-    "SYNO.SDS.ScrcpyNas.Main": {
+    "SYNO.SDS.ScrcpyNasFree.Main": {
       "type": "lib",
-      "title": "ScrcpyNas",
+      "title": "ScrcpyNas投屏",
       "icon": "images/icon_{0}.png",
       "depend": []
     }

@@ -4,7 +4,7 @@
     "items": [
       { "desc": "ScrcpyNas 可在浏览器中接收 Android 端 scrcpy-server 的视频流，并支持触控、按键等基础控制。" },
       { "desc": "手机端准备：开启 Android 开发者选项与无线调试；Android 11+ 首次使用需在页面中输入配对端口和配对码。" },
-      { "desc": "访问方式：安装完成后从 DSM 主菜单打开，或浏览器访问 /webman/zgcwkj/scrcpynas/。" }
+      { "desc": "访问方式：安装完成后从 DSM 主菜单打开，或浏览器访问 /webman/zgcwkj/scrcpynasfree/。" }
     ]
   }
 ]

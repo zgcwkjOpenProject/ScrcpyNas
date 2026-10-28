@@ -1,6 +1,6 @@
-Ext.define('SYNO.SDS.ScrcpyNas.Instance', {
+Ext.define('SYNO.SDS.ScrcpyNasFree.Instance', {
   extend: 'SYNO.SDS.AppInstance',
-  appWindowName: 'SYNO.SDS.ScrcpyNas.Main',
+  appWindowName: 'SYNO.SDS.ScrcpyNasFree.Main',
 
   // 初始化 DSM 桌面应用实例
   constructor: function () {
@@ -8,17 +8,17 @@ Ext.define('SYNO.SDS.ScrcpyNas.Instance', {
   }
 });
 
-Ext.define('SYNO.SDS.ScrcpyNas.Main', {
+Ext.define('SYNO.SDS.ScrcpyNasFree.Main', {
   extend: 'SYNO.SDS.AppWindow',
   appInstance: null,
 
-  // 创建承载 ScrcpyNas Webman 页面的 DSM 窗口
+  // 创建承载 ScrcpyNas投屏 Webman 页面的 DSM 窗口
   constructor: function (cfg) {
     this.appInstance = cfg.appInstance;
 
     // iframe 使用 Webman 路径，保持 DSM 桌面入口和反代链路一致
     var config = Ext.apply({
-      title: 'ScrcpyNas',
+      title: 'ScrcpyNas投屏',
       resizable: true,
       maximizable: true,
       minimizable: true,
@@ -30,7 +30,7 @@ Ext.define('SYNO.SDS.ScrcpyNas.Main', {
       items: [
         new Ext.BoxComponent({
           height: '100%',
-          html: '<iframe title="ScrcpyNas" src="about:blank" frameborder="0" width="100%" height="100%" style="display:block"></iframe>',
+          html: '<iframe title="ScrcpyNas投屏" src="about:blank" frameborder="0" width="100%" height="100%" style="display:block"></iframe>',
           listeners: {
             // iframe 准备完成后取得当前 DSM 会话的 Token 再进入应用
             afterrender: function (component) {
@@ -44,7 +44,7 @@ Ext.define('SYNO.SDS.ScrcpyNas.Main', {
                 try {
                   var data = JSON.parse(request.responseText);
                   if (!data.SynoToken) return;
-                  component.getEl().down('iframe').dom.src = '/webman/zgcwkj/scrcpynas/?SynoToken=' + encodeURIComponent(data.SynoToken);
+                  component.getEl().down('iframe').dom.src = '/webman/zgcwkj/scrcpynasfree/?SynoToken=' + encodeURIComponent(data.SynoToken);
                 } catch (_) {
                   return;
                 }
