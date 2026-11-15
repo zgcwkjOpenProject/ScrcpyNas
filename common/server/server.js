@@ -53,7 +53,7 @@ const RECORDS_FILE =
   path.join(path.dirname(VAR_LOG_FILE || APP_LOG_FILE || LOG_FILE || path.join(os.tmpdir(), 'scrcpyNas.log')), 'devices.json');
 
 const { routeBases: ROUTE_BASES, appPath, buildProxyPath, escapeRegExp, isScrcpyPath } = createRoutePaths(BASE_PATH);
-const { runAdb, parseDevices } = createAdb(ADB);
+const { runAdb, parseDevices, killAdbServer } = createAdb(ADB);
 const { readRecords, writeRecords, upsertRecord } = createRecordStore(RECORDS_FILE);
 const { checkWsScrcpy, startWsScrcpy, stopWsScrcpy } = createWsScrcpyManager({
   nodeBin: NODE_BIN,
@@ -97,6 +97,7 @@ registerApiRoutes(app, {
   appPath,
   runAdb,
   parseDevices,
+  killAdbServer,
   readRecords,
   writeRecords,
   upsertRecord,
@@ -116,17 +117,33 @@ registerApiRoutes(app, {
   varLogFile: VAR_LOG_FILE,
 });
 
-// 处理进程终止信号
-process.on('SIGTERM', () => {
+// 停用套件时结束 adb 服务 避免 adb 进程残留占着端口
+let adbStopped = false;
+async function shutdownAdb() {
+  if (adbStopped) return;
+  adbStopped = true;
+  const r = await killAdbServer(3000);
+  console.log(`[adb] exit kill-server code=${r.code} forced=${r.forced} err=${r.err}`);
+}
+
+// 收到退出信号时先停引擎再停 adb 最后结束进程
+let exiting = false;
+function handleExit(signal) {
+  if (exiting) return;
+  exiting = true;
+  console.log(`[server] 收到 ${signal} 开始停止服务`);
   stopWsScrcpy();
-  process.exit(0);
-});
+  shutdownAdb().finally(() => process.exit(0));
+}
+
+// 处理进程终止信号
+process.on('SIGTERM', () => handleExit('SIGTERM'));
 
 // 处理控制台中断信号
-process.on('SIGINT', () => {
-  stopWsScrcpy();
-  process.exit(0);
-});
+process.on('SIGINT', () => handleExit('SIGINT'));
+
+// 处理终端断开信号
+process.on('SIGHUP', () => handleExit('SIGHUP'));
 
 // ---------------------------------------------------------------------------
 // 启动

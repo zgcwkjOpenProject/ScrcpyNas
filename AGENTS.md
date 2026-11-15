@@ -17,6 +17,7 @@ ScrcpyNas 是运行在飞牛 fnOS 和群晖 DSM 7 上的 Android 无线投屏与
 - `platforms/build-common.ps1`：构建公共函数（暂存清理、LF 转换、tar 写入辅助）
 - `platforms/build-fnos.ps1`：飞牛 `.fpk` 构建脚本
 - `platforms/build-synology.ps1`：群晖 DSM 7 `.spk` 构建脚本
+- `platforms/icon-badge/`：图标 Free 角标合成脚本，含预览与批量覆盖套件图标
 - `build.ps1`：一键构建全部发布产物的交互入口
 - `build/`：构建暂存与 Node 运行时缓存（可再生，不入库）
 - `dist/`：打包产物唯一存放位置（不入库）

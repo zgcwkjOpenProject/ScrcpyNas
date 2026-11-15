@@ -2,6 +2,9 @@
 
 // UI 模块 绑定页面事件和弹窗行为 具体设备和投屏动作交给 devices/stream 模块
 
+// 连接提示定时器 用于在等待授权时补充文案
+var msgTimer = null;
+
 // 打开一个弹窗
 function openModal(id) {
   const modal = $(`#${id}`);
@@ -112,6 +115,14 @@ function bindConnectForm() {
     msg.textContent = '连接中...';
     msg.className = 'msg';
 
+    // 提示可能等用户确认授权 避免长时间无反馈
+    msgTimer && clearTimeout(msgTimer);
+    msgTimer = setTimeout(() => {
+      if (msg.textContent === '连接中...') {
+        msg.textContent = '连接中... 如手机弹出授权提示，请点击允许';
+      }
+    }, 3000);
+
     const payload = {
       ip: $('#ip').value.trim(),
       port: $('#port').value.trim(),
@@ -121,15 +132,19 @@ function bindConnectForm() {
       maxSize: getSelectedMaxSize(),
     };
     const data = await connectNetworkDevice(payload);
+    msgTimer && clearTimeout(msgTimer);
 
     if (data.ok) {
       msg.textContent = '连接成功';
       msg.className = 'msg ok';
     } else {
+      const unauthorized = (data.results || []).some((r) => /\bunauthorized\b/i.test(r.out || ''));
       const detail = (data.results || [])
         .map((r) => `${r.step}: code=${r.code} ${r.out || ''} ${r.err || ''}`.trim())
         .join('\n');
-      msg.textContent = `连接失败。${detail || data.error || ''}`;
+      msg.textContent = unauthorized
+        ? `连接失败，设备未授权。若手机未弹授权窗，请在手机「开发者选项」撤销 USB 调试授权后重试。\n${detail}`
+        : `连接失败。${detail || data.error || ''}`;
       msg.className = 'msg err';
       await loadLogs();
     }

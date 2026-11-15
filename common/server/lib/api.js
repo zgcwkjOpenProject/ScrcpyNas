@@ -22,6 +22,7 @@ function registerApiRoutes(app, deps) {
     appPath,
     runAdb,
     parseDevices,
+    killAdbServer,
     readRecords,
     writeRecords,
     upsertRecord,
@@ -88,6 +89,19 @@ function registerApiRoutes(app, deps) {
     res.json({ ok: true });
   });
 
+  // adb 超时说明进程已经卡死 主动停掉 免得后续请求一直挂住
+  async function stopStuckAdb(results) {
+    console.log('[adb] timeout, kill adb server');
+    const killed = await killAdbServer();
+    results.push({
+      step: 'kill-adb-server',
+      code: killed.code,
+      out: killed.forced ? 'adb 无响应，已强制结束 adb 进程' : 'adb 无响应，已停止 adb 服务',
+      err: killed.err,
+    });
+    console.log(`[adb] kill-server code=${killed.code} forced=${killed.forced} err=${killed.err}`);
+  }
+
   // 执行无线调试配对和连接
   app.post(appPath('/api/connect'), async (req, res) => {
     const { ip, port, pairPort, pairCode, name } = req.body || {};
@@ -112,6 +126,10 @@ function registerApiRoutes(app, deps) {
       const before = await runAdb(['devices', '-l'], 10000);
       results.push({ step: 'devices-before-connect', ...before });
       console.log(`[adb] devices before connect code=${before.code} out=${before.out} err=${before.err}`);
+      if (before.code === -2) {
+        await stopStuckAdb(results);
+        return res.json({ ok: false, results });
+      }
 
       // Android 11+ 无线调试先配对再连接
       if (pairCode) {
@@ -132,6 +150,10 @@ function registerApiRoutes(app, deps) {
         const pr = await runAdb(['pair', pairTarget, String(pairCode)]);
         results.push({ step: 'pair', ...pr });
         console.log(`[adb] pair result code=${pr.code} out=${pr.out} err=${pr.err}`);
+        if (pr.code === -2) {
+          await stopStuckAdb(results);
+          return res.json({ ok: false, results });
+        }
         if (pr.code !== 0) {
           return res.json({ ok: false, results });
         }
@@ -156,10 +178,33 @@ function registerApiRoutes(app, deps) {
       const cr = await runAdb(['connect', connectTarget], 15000);
       results.push({ step: 'connect', ...cr });
       console.log(`[adb] connect result code=${cr.code} out=${cr.out} err=${cr.err}`);
+      if (cr.code === -2) {
+        await stopStuckAdb(results);
+        return res.json({ ok: false, results });
+      }
 
-      const after = await runAdb(['devices', '-l'], 10000);
-      results.push({ step: 'devices-after-connect', ...after });
+      let after = await runAdb(['devices', '-l'], 10000);
       console.log(`[adb] devices after connect code=${after.code} out=${after.out} err=${after.err}`);
+      if (after.code === -2) {
+        await stopStuckAdb(results);
+        return res.json({ ok: false, results });
+      }
+
+      // 未授权的连接会卡死 断开重连一次让手机重新弹出授权窗
+      if (cr.code === 0 && /\bunauthorized\b/.test(after.out)) {
+        console.log(`[connect] ${connectTarget} unauthorized, reconnect to retrigger auth`);
+        results.push({ step: 'unauthorized', code: 0, out: '设备未授权，请在手机上允许调试' });
+        await runAdb(['disconnect', connectTarget], 10000);
+        const rr = await runAdb(['connect', connectTarget], 15000);
+        results.push({ step: 'reauth-reconnect', ...rr });
+        if (rr.code === -2) {
+          await stopStuckAdb(results);
+          return res.json({ ok: false, results });
+        }
+        after = await runAdb(['devices', '-l'], 10000);
+      }
+
+      results.push({ step: 'devices-after-connect', ...after });
 
       const output = cr.out + cr.err;
       const ok =

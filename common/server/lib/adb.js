@@ -3,6 +3,43 @@
 const net = require('net');
 const { spawn } = require('child_process');
 
+// 兜底强杀 adb 进程 kill-server 都叫不动时用系统命令清理
+function forceKillAdbProcesses() {
+  return new Promise((resolve) => {
+    const isWin = process.platform === 'win32';
+    const cmd = isWin ? 'taskkill' : 'pkill';
+    // 按进程名精确匹配 避免误伤路径里含 adb 的其它进程
+    const args = isWin ? ['/F', '/IM', 'adb.exe'] : ['-9', '-x', 'adb'];
+    let done = false;
+    const finish = () => {
+      if (done) return;
+      done = true;
+      resolve();
+    };
+    try {
+      const child = spawn(cmd, args, { stdio: 'ignore' });
+      const timer = setTimeout(() => {
+        try {
+          child.kill('SIGKILL');
+        } catch (_) {
+          /* ignore */
+        }
+        finish();
+      }, 5000);
+      child.on('close', () => {
+        clearTimeout(timer);
+        finish();
+      });
+      child.on('error', () => {
+        clearTimeout(timer);
+        finish();
+      });
+    } catch (_) {
+      finish();
+    }
+  });
+}
+
 function createAdb(adbBin) {
   function runAdb(args, timeoutMs = 30000) {
     return new Promise((resolve) => {
@@ -65,7 +102,15 @@ function createAdb(adbBin) {
     return devices;
   }
 
-  return { runAdb, parseDevices };
+  // 卡住时先停 adb 服务 kill-server 也叫不动就强杀进程 下次调用会自动拉起
+  async function killAdbServer(timeoutMs = 5000) {
+    const r = await runAdb(['kill-server'], timeoutMs);
+    const stuck = r.code === -2 || r.code === -1;
+    if (stuck) await forceKillAdbProcesses();
+    return { ...r, forced: stuck };
+  }
+
+  return { runAdb, parseDevices, killAdbServer };
 }
 
 function checkTcp(host, port, timeoutMs = 5000) {
